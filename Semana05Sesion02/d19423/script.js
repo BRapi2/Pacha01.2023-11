@@ -102,7 +102,7 @@ const Aerolinea = function () {
             eventos();
         },
     };
-}();
+
 
 class Aviones{
     constructor(matricula,modelo,nroAsientos,capacidadMinima){
