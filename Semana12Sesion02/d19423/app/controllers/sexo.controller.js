@@ -1,24 +1,19 @@
 const db = require("../models");
-const Tutorial = db.tutorials;
-const Comment = db.comments;
+const Sexo = db.sexo;
 const Op = db.Sequelize.Op;
-
-
 
 exports.create = (req, res) => {
     // Validate request
-    if (!req.body.title) {
+    if (!req.body.descripcion) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
         return;
     }
-    const tutorial = {
-        title: req.body.title,
-        description: req.body.description,
-        published: req.body.published ? req.body.published : false
+    const sexo = {
+        descripcion: req.body.descripcion
     };
-    Tutorial.create(tutorial)
+    Sexo.create(sexo)
         .then(data => {
             res.send(data);
         })
@@ -30,13 +25,11 @@ exports.create = (req, res) => {
         });
 };
 exports.findAll = (req, res) => {
-    const title = req.query.title;
-    console.log(title)
-    var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
+    const descripcion = req.query.descripcion;
+    console.log(descripcion)
+    var condition = descripcion ? { descripcion: { [Op.like]: `%${descripcion}%` } } : null;
 
-    Tutorial.findAll({
-        include: ["comments", "tags"],
-    }, { where: condition })
+    Sexo.findAll( { where: condition })
         .then(data => {
             res.send(data);
         })
@@ -50,7 +43,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
     const id = req.params.id;
 
-    Tutorial.findByPk(id)
+    Sexo.findByPk(id)
         .then(data => {
             if (data) {
                 res.send(data);
@@ -69,7 +62,7 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
     const id = req.params.id;
 
-    Tutorial.update(req.body, {
+    Sexo.update(req.body, {
         where: { id: id }
     })
         .then(num => {
@@ -92,7 +85,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     const id = req.params.id;
 
-    Tutorial.destroy({
+    Sexo.destroy({
         where: { id: id }
     })
         .then(num => {
@@ -113,7 +106,7 @@ exports.delete = (req, res) => {
         });
 };
 exports.deleteAll = (req, res) => {
-    Tutorial.destroy({
+    Sexo.destroy({
       where: {},
       truncate: false
     })
@@ -127,38 +120,3 @@ exports.deleteAll = (req, res) => {
         });
       });
 };
-
-exports.findAllPublished = (req, res) => {
-    Tutorial.findAll({ where: { published: true } })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving tutorials."
-        });
-      });
-};
-
-exports.createComment = (req, res)=>{
-    const tutorialId = req.params.id;
-    const comment = {
-        name: req.body.name,
-        text: req.body.text
-      };
-    Comment.create({
-      name: comment.name,
-      text: comment.text,
-      tutorialId: tutorialId,
-    })
-    .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the Tutorial."
-        });
-      });
-  };
